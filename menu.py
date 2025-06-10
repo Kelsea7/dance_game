@@ -1,4 +1,4 @@
-# menu.py — poprawiony wybór difficulty, mniejsze czcionki, zawijanie nazw, pauza = stop/play muzyki
+# menu.py — wybór gracza, poprawiony SETTINGS, nie używa DIFFICULTY_SETTINGS
 import pygame
 import sys
 import os
@@ -14,8 +14,6 @@ screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 font = pygame.font.SysFont("dejavusans", 30)
 small_font = pygame.font.SysFont("dejavusans", 24)
 smallest_font = pygame.font.SysFont("dejavusans", 20)
-CHARSET = list("ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.-_ ")
-
 
 HIGHLIGHT = (60, 60, 60)
 DARK_GRAY = (40, 40, 40)
@@ -26,7 +24,6 @@ GREEN = (0, 255, 0)
 RED = (255, 51, 51)
 ORANGE = (255, 128, 0)
 
-
 emoji_images = {
     "music": pygame.image.load("assets/emojis/1f3b5.png").convert_alpha(),
     "game": pygame.image.load("assets/emojis/1f3ae.png").convert_alpha(),
@@ -36,8 +33,17 @@ emoji_images = {
     "target": pygame.image.load("assets/emojis/1f3af.png").convert_alpha()
 }
 
-
 menu_options = ["CHOOSE SONG", "SETTINGS", "SCORES", "CREDITS", "EXIT"]
+SETTINGS_FILE = "settings.json"
+if os.path.exists(SETTINGS_FILE):
+    with open(SETTINGS_FILE, "r") as f:
+        settings = json.load(f)
+        players = settings.get("players", ["PLAYER"])
+        selected_player = settings.get("selected_player", 0) % len(players)
+else:
+    players = ["PLAYER"]
+    selected_player = 0
+
 selected_index = 0
 songs = sorted([f for f in os.listdir("songs") if f.endswith(".ogg") or f.endswith(".mp3") or f.endswith(".wav")])
 if not songs:
@@ -67,15 +73,37 @@ arrow_modes = ["random", "predefined"]
 selected_arrow_mode = 0
 
 def show_choose_song():
-    global selected_song, selected_difficulty, selected_arrow_mode
-    step = 0  # 0: SONG, 1: DIFFICULTY, 2: ARROW MODE, 3: START, 4: BACK
+    global selected_song, selected_difficulty, selected_arrow_mode, selected_player, players
+    step = 0  # 0: PLAYER, 1: SONG, 2: DIFFICULTY, 3: ARROW MODE, 4: START, 5: BACK
     running = True
     while running:
         clock.tick(30)
         screen.fill(DARK_GRAY)
-
         song_title = os.path.splitext(songs[selected_song])[0]
         predefined_exists = os.path.exists(os.path.join("songs", f"{song_title}_map.json"))
+
+        # --- WYBÓR GRACZA ---
+        player_y = 100
+        if step == 0:
+            pygame.draw.rect(screen, HIGHLIGHT, pygame.Rect(50, player_y, SCREEN_WIDTH - 100, 28))
+
+        middle_x = SCREEN_WIDTH // 2
+        prev_name = players[(selected_player - 1) % len(players)]
+        curr_name = players[selected_player]
+        next_name = players[(selected_player + 1) % len(players)]
+
+        # Lewy
+        text = smallest_font.render(prev_name, True, WHITE)
+        screen.blit(text, (middle_x - 200 - text.get_width() // 2, player_y))
+        # Aktywny
+        text = smallest_font.render(curr_name, True, GREEN)
+        screen.blit(text, (middle_x - text.get_width() // 2, player_y))
+        pygame.draw.line(screen, GREEN,
+            (middle_x - text.get_width() // 2, player_y + 22),
+            (middle_x + text.get_width() // 2, player_y + 22), 2)
+        # Prawy
+        text = smallest_font.render(next_name, True, WHITE)
+        screen.blit(text, (middle_x + 200 - text.get_width() // 2, player_y))
 
         # Tytuły
         song_label = small_font.render("SONG:", True, WHITE)
@@ -86,21 +114,18 @@ def show_choose_song():
         # Piosenka (mniejsza czcionka, zawijanie)
         song_lines = wrap_text(songs[selected_song], smallest_font, SCREEN_WIDTH - 120)
         bg_height = len(song_lines) * 22
-        if step == 0:
+        if step == 1:
             pygame.draw.rect(screen, HIGHLIGHT, pygame.Rect(50, 180, SCREEN_WIDTH - 100, bg_height))
         for i, line in enumerate(song_lines):
             bg_rect = pygame.Rect(50, 180 + i * 22, SCREEN_WIDTH - 100, 22)
-            
-            line_surface = smallest_font.render(line, True, GREEN if step == 0 else WHITE)
+            line_surface = smallest_font.render(line, True, GREEN if step == 1 else WHITE)
             screen.blit(line_surface, (60, 180 + i * 22))
 
         # Poziomy trudności poziomo (mniejsza czcionka)
         x_start = 60
-        if step == 1:
+        if step == 2:
             pygame.draw.rect(screen, HIGHLIGHT, pygame.Rect(50, 320, SCREEN_WIDTH - 100, 28))
         for i, diff in enumerate(difficulties):
-            bg_rect = pygame.Rect(x_start - 5, 320, 80, 28)
-            
             color = GREEN if i == selected_difficulty else WHITE
             text = smallest_font.render(diff, True, color)
             screen.blit(text, (x_start, 320))
@@ -111,11 +136,10 @@ def show_choose_song():
         # Arrow mode
         mode_label = small_font.render("ARROWS:", True, WHITE)
         screen.blit(mode_label, (60, 390))
-        if step == 2:
+        if step == 3:
             pygame.draw.rect(screen, HIGHLIGHT, pygame.Rect(50, 420, SCREEN_WIDTH - 100, 28))
 
         x_start = 200
-        
         for i, mode in enumerate(arrow_modes):
             if mode == "predefined" and not predefined_exists:
                 continue
@@ -127,13 +151,13 @@ def show_choose_song():
             x_start += text.get_width() + 30
 
         # START
-        start_color = GREEN if step == 3 else WHITE
-        start_text = small_font.render(("▶ " if step == 3 else "   ") + "START", True, start_color)
+        start_color = GREEN if step == 4 else WHITE
+        start_text = small_font.render(("▶ " if step == 4 else "   ") + "START", True, start_color)
         screen.blit(start_text, (SCREEN_WIDTH // 2 - start_text.get_width() // 2, 480))
 
         # BACK
-        back_color = GREEN if step == 4 else WHITE
-        back_text = small_font.render(("▶ " if step == 4 else "   ") + "BACK", True, back_color)
+        back_color = GREEN if step == 5 else WHITE
+        back_text = small_font.render(("▶ " if step == 5 else "   ") + "BACK", True, back_color)
         screen.blit(back_text, (SCREEN_WIDTH // 2 - back_text.get_width() // 2, 520))
 
         try:
@@ -147,43 +171,52 @@ def show_choose_song():
         except:
             pass
 
-
         pygame.display.flip()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT or is_select(event):
                 return
             elif is_pressed(event, "up"):
-                step = (step - 1) % 5
+                step = (step - 1) % 6
             elif is_pressed(event, "down"):
-                step = (step + 1) % 5
+                step = (step + 1) % 6
             elif is_pressed(event, "left"):
                 if step == 0:
-                    selected_song = (selected_song - 1) % len(songs)
+                    selected_player = (selected_player - 1) % len(players)
                 elif step == 1:
-                    selected_difficulty = (selected_difficulty - 1) % len(difficulties)
+                    selected_song = (selected_song - 1) % len(songs)
                 elif step == 2:
+                    selected_difficulty = (selected_difficulty - 1) % len(difficulties)
+                elif step == 3:
                     selected_arrow_mode = (selected_arrow_mode - 1) % len(arrow_modes)
                     if arrow_modes[selected_arrow_mode] == "predefined" and not predefined_exists:
                         selected_arrow_mode = 0
             elif is_pressed(event, "right"):
                 if step == 0:
-                    selected_song = (selected_song + 1) % len(songs)
+                    selected_player = (selected_player + 1) % len(players)
                 elif step == 1:
-                    selected_difficulty = (selected_difficulty + 1) % len(difficulties)
+                    selected_song = (selected_song + 1) % len(songs)
                 elif step == 2:
+                    selected_difficulty = (selected_difficulty + 1) % len(difficulties)
+                elif step == 3:
                     selected_arrow_mode = (selected_arrow_mode + 1) % len(arrow_modes)
                     if arrow_modes[selected_arrow_mode] == "predefined" and not predefined_exists:
                         selected_arrow_mode = 0
             elif is_start(event):
-                if step == 3:
+                if step == 4:
                     try:
                         song_path = os.path.join("songs", songs[selected_song])
-                        difficulty = difficulties[selected_difficulty].upper()
-                        player_name = "PLAYER"
+                        difficulty = difficulties[selected_difficulty].upper()  # tu już nie .upper()
+                        player_name = players[selected_player]
                         arrow_mode = arrow_modes[selected_arrow_mode]
                         song_title = os.path.splitext(os.path.basename(song_path))[0]
                         map_file = f"songs/{song_title}_map.json" if arrow_mode == "predefined" else None
+
+                        # zapisz wybranego gracza do settings
+                        settings["selected_player"] = selected_player
+                        with open(SETTINGS_FILE, "w") as f:
+                            json.dump(settings, f, indent=2)
+
                         run_game(song_path=song_path, difficulty=difficulty, player_name=player_name, arrow_mode=arrow_mode, map_file=map_file)
                     except Exception as e:
                         import traceback
@@ -194,9 +227,8 @@ def show_choose_song():
                         pygame.display.flip()
                         pygame.time.delay(2000)
                         return
-                elif step == 4:
+                elif step == 5:
                     return  # BACK → powrót do MAIN MENU
-
 
 def draw_menu():
     screen.fill(DARK_GRAY)
@@ -238,20 +270,19 @@ def menu_loop():
                     pygame.quit()
                     sys.exit()
 
-
 def show_settings():
-    settings_path = "settings.json"
+    global players, settings
+    settings_path = SETTINGS_FILE
     if os.path.exists(settings_path):
         with open(settings_path, "r") as f:
             settings = json.load(f)
     else:
         settings = {
-            "difficulties": DIFFICULTY_SETTINGS,
             "auto_clean_scores": False,
             "players": ["PLAYER1", "PLAYER2", "PLAYER3", "PLAYER4", "PLAYER5"]
         }
 
-    players = settings["players"]
+    players = settings.get("players", ["PLAYER"])
     clean_scores = settings.get("auto_clean_scores", False)
     selected_index = 0
     editing_name = False
@@ -295,7 +326,6 @@ def show_settings():
             else:
                 text = ("▶ " if is_active else "   ") + name
                 screen.blit(small_font.render(text, True, GREEN if is_active else WHITE), (60, y))
-
 
         # toggle auto clean
         toggle_y = 160 + len(players) * 40 + 20
@@ -345,7 +375,7 @@ def show_settings():
                     if char_index == max_len:
                         editing_name = False
                         settings["players"] = players
-                        with open("settings.json", "w") as f:
+                        with open(SETTINGS_FILE, "w") as f:
                             json.dump(settings, f, indent=2)
             else:
                 if is_pressed(event, "up"):
@@ -359,11 +389,10 @@ def show_settings():
                     elif selected_index == len(players):
                         clean_scores = not clean_scores
                         settings["auto_clean_scores"] = clean_scores
-                        with open("settings.json", "w") as f:
+                        with open(SETTINGS_FILE, "w") as f:
                             json.dump(settings, f, indent=2)
                     elif selected_index == len(players) + 1:
                         return
-
 
 
 ##### SCORES #####
@@ -483,8 +512,6 @@ def show_scores():
                 if scroll_offset + VISIBLE_ENTRIES < len(entries):
                     screen.blit(smallest_font.render("▼", True, CYAN), (SCREEN_WIDTH - 40, base_y + VISIBLE_ENTRIES * 30))
 
-
-
         else:
             score = entries[selected_score_index]
             if "dummy" in score:
@@ -601,7 +628,6 @@ def show_credits():
             elif is_pressed(event, "down"):
                 if offset + visible_entries < total_entries:
                     offset += 1
-
 
 
 if __name__ == "__main__":

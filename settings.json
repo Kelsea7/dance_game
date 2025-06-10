@@ -24,5 +24,6 @@
     "PLAYER3",
     "PLAYER4",
     "PLAYER5"
-  ]
+  ],
+  "selected_player": 1
 }
