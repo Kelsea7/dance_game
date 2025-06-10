@@ -206,7 +206,7 @@ def show_choose_song():
                 if step == 4:
                     try:
                         song_path = os.path.join("songs", songs[selected_song])
-                        difficulty = difficulties[selected_difficulty].upper()  # tu już nie .upper()
+                        difficulty = difficulties[selected_difficulty].upper()  
                         player_name = players[selected_player]
                         arrow_mode = arrow_modes[selected_arrow_mode]
                         song_title = os.path.splitext(os.path.basename(song_path))[0]
@@ -288,7 +288,7 @@ def show_settings():
     editing_name = False
     char_index = 0
     max_len = 7
-    alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz 0123456789.+-_ ")
+    alphabet = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ 0123456789.+-_ ")
     total_options = len(players) + 2  # players + auto-clean toggle + BACK
     clock = pygame.time.Clock()
 
@@ -357,13 +357,17 @@ def show_settings():
             if editing_name:
                 if is_pressed(event, "up"):
                     ch = players[selected_index][char_index] if char_index < len(players[selected_index]) else "A"
-                    idx = (alphabet.index(ch.upper()) + 1) % len(alphabet)
+                    if ch not in alphabet:
+                        ch = "A"
+                    idx = (alphabet.index(ch) + 1) % len(alphabet)
                     updated = list(players[selected_index].ljust(max_len))
                     updated[char_index] = alphabet[idx]
                     players[selected_index] = "".join(updated).strip()
                 elif is_pressed(event, "down"):
                     ch = players[selected_index][char_index] if char_index < len(players[selected_index]) else "A"
-                    idx = (alphabet.index(ch.upper()) - 1) % len(alphabet)
+                    if ch not in alphabet:
+                        ch = "A"
+                    idx = (alphabet.index(ch) - 1) % len(alphabet)
                     updated = list(players[selected_index].ljust(max_len))
                     updated[char_index] = alphabet[idx]
                     players[selected_index] = "".join(updated).strip()
@@ -417,7 +421,7 @@ def show_scores():
         clock.tick(30)
         screen.fill(DARK_GRAY)
         current_diff = difficulties[selected_difficulty]
-        filtered = [s for s in all_scores if s.get("difficulty", "").lower() == current_diff.lower()]
+        filtered = [s for s in all_scores if s.get("difficulty", "").upper() == current_diff.upper()]
         filtered = sorted(filtered, key=lambda x: x["time"], reverse=True)
         entries = [{"dummy": True}] + filtered
 

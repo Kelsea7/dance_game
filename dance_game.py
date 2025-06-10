@@ -24,7 +24,8 @@ else:
 
 if os.path.exists(SETTINGS_FILE):
     with open(SETTINGS_FILE, "r") as f:
-        DIFFICULTY_SETTINGS = json.load(f)
+        settings = json.load(f)
+    DIFFICULTY_SETTINGS = settings["difficulties"]
 else:
     DIFFICULTY_SETTINGS = {
         "EASY": {"speed": 5, "double_chance": 0.1},
@@ -33,7 +34,7 @@ else:
         "NIGHTMARE": {"speed": 12, "double_chance": 0.3}
     }
     with open(SETTINGS_FILE, "w") as f:
-        json.dump(DIFFICULTY_SETTINGS, f, indent=2)
+        json.dump({"difficulties": DIFFICULTY_SETTINGS}, f, indent=2)
 
 if pygame.joystick.get_count() > 0:
     joystick = pygame.joystick.Joystick(0)
