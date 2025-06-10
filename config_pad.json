@@ -1,0 +1,9 @@
+{
+  "left": 0,
+  "down": 1,
+  "up": 2,
+  "right": 3,
+  "start": 9,
+  "pause": 8,
+  "back": 7
+}

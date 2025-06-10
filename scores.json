@@ -1,0 +1,240 @@
+[
+  {
+    "time": "2025-06-07T18:16:02.805016",
+    "song": "test",
+    "difficulty": "nightmare",
+    "score": 46,
+    "accuracy": 85.7,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 4,
+      "GOOD": 3,
+      "OK": 5,
+      "MISS": 2
+    }
+  },
+  {
+    "time": "2025-06-07T18:16:24.251775",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 28,
+    "accuracy": 100.0,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 3,
+      "GOOD": 4,
+      "OK": 1,
+      "MISS": 0
+    }
+  },
+  {
+    "time": "2025-06-07T18:36:40.291948",
+    "song": "(2,38min) LiangLiang Piano",
+    "difficulty": "medium",
+    "score": 281,
+    "accuracy": 93.1,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 23,
+      "GOOD": 45,
+      "OK": 54,
+      "MISS": 9
+    }
+  },
+  {
+    "time": "2025-06-07T18:55:12.929095",
+    "song": "test",
+    "difficulty": "nightmare",
+    "score": 46,
+    "accuracy": 100.0,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 4,
+      "GOOD": 3,
+      "OK": 5,
+      "MISS": 0
+    }
+  },
+  {
+    "time": "2025-06-08T12:04:41.106136",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 25,
+    "accuracy": 90.0,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 2,
+      "GOOD": 4,
+      "OK": 3,
+      "MISS": 1
+    }
+  },
+  {
+    "time": "2025-06-08T12:04:58.222619",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 26,
+    "accuracy": 80.0,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 3,
+      "GOOD": 3,
+      "OK": 2,
+      "MISS": 2
+    }
+  },
+  {
+    "time": "2025-06-08T12:06:27.517250",
+    "song": "test",
+    "difficulty": "nightmare",
+    "score": 54,
+    "accuracy": 92.9,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 5,
+      "GOOD": 4,
+      "OK": 4,
+      "MISS": 1
+    }
+  },
+  {
+    "time": "2025-06-08T12:06:44.773987",
+    "song": "test",
+    "difficulty": "nightmare",
+    "score": 34,
+    "accuracy": 71.4,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 2,
+      "GOOD": 3,
+      "OK": 5,
+      "MISS": 4
+    }
+  },
+  {
+    "time": "2025-06-08T18:45:10.128729",
+    "song": "(2,38min) LiangLiang Piano",
+    "difficulty": "hard",
+    "score": 329,
+    "accuracy": 97.6,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 31,
+      "GOOD": 41,
+      "OK": 51,
+      "MISS": 3
+    }
+  },
+  {
+    "time": "2025-06-09T19:35:43.274461",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 24,
+    "accuracy": 100.0,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 1,
+      "GOOD": 5,
+      "OK": 4,
+      "MISS": 0
+    }
+  },
+  {
+    "time": "2025-06-09T19:35:59.181116",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 18,
+    "accuracy": 88.9,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 1,
+      "GOOD": 3,
+      "OK": 4,
+      "MISS": 1
+    }
+  },
+  {
+    "time": "2025-06-09T19:36:14.705208",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 16,
+    "accuracy": 88.9,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 1,
+      "GOOD": 2,
+      "OK": 5,
+      "MISS": 1
+    }
+  },
+  {
+    "time": "2025-06-09T19:36:30.305261",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 16,
+    "accuracy": 88.9,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 0,
+      "GOOD": 4,
+      "OK": 4,
+      "MISS": 1
+    }
+  },
+  {
+    "time": "2025-06-09T19:36:46.019407",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 20,
+    "accuracy": 100.0,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 1,
+      "GOOD": 4,
+      "OK": 3,
+      "MISS": 0
+    }
+  },
+  {
+    "time": "2025-06-09T19:37:01.322019",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 41,
+    "accuracy": 100.0,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 5,
+      "GOOD": 5,
+      "OK": 1,
+      "MISS": 0
+    }
+  },
+  {
+    "time": "2025-06-09T19:37:21.019733",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 39,
+    "accuracy": 100.0,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 5,
+      "GOOD": 4,
+      "OK": 2,
+      "MISS": 0
+    }
+  },
+  {
+    "time": "2025-06-09T19:37:36.095012",
+    "song": "test",
+    "difficulty": "hard",
+    "score": 35,
+    "accuracy": 100.0,
+    "player": "PLAYER",
+    "counts": {
+      "PERFECT": 4,
+      "GOOD": 4,
+      "OK": 3,
+      "MISS": 0
+    }
+  }
+]

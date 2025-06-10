@@ -1,0 +1,28 @@
+{
+  "difficulties": {
+    "EASY": {
+      "speed": 5,
+      "double_chance": 0.1
+    },
+    "MEDIUM": {
+      "speed": 7,
+      "double_chance": 0.15
+    },
+    "HARD": {
+      "speed": 9,
+      "double_chance": 0.2
+    },
+    "NIGHTMARE": {
+      "speed": 12,
+      "double_chance": 0.3
+    }
+  },
+  "auto_clean_scores": false,
+  "players": [
+    "KASIA",
+    "KARO",
+    "PLAYER3",
+    "PLAYER4",
+    "PLAYER5"
+  ]
+}
