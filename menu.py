@@ -341,7 +341,7 @@ def show_settings():
             screen.blit(smallest_font.render(line, True, GREEN if is_active else WHITE), (60, y))
 
         # BACK
-        back_y = toggle_y + 60
+        back_y = toggle_y + 80
         is_active = selected_index == len(players) + 1
         if is_active:
             pygame.draw.rect(screen, HIGHLIGHT, pygame.Rect(50, back_y, SCREEN_WIDTH - 100, 30))
@@ -592,6 +592,8 @@ def show_credits():
     total_entries = len(credits)
     line_height = 100
 
+    max_text_width = SCREEN_WIDTH - 160  # 60px lewy margines, 100px prawy
+
     while running:
         clock.tick(30)
         screen.fill(DARK_GRAY)
@@ -608,15 +610,36 @@ def show_credits():
             num_surface = smallest_font.render(number_text, True, CYAN)
             screen.blit(num_surface, (SCREEN_WIDTH - 100, y))
 
-            screen.blit(smallest_font.render(entry["title"], True, CYAN), (60, y))
-            screen.blit(smallest_font.render(f"By: {entry['author']}", True, WHITE), (60, y + 20))
-            screen.blit(smallest_font.render(entry["url"], True, BLUE), (60, y + 40))
-            screen.blit(smallest_font.render(f"License: {entry['license']}", True, ORANGE), (60, y + 60))
+            y_line = y
+            # title
+            for line in wrap_text(entry["title"], smallest_font, max_text_width):
+                screen.blit(smallest_font.render(line, True, CYAN), (60, y_line))
+                y_line += 20
+
+            # author (obsługa \n)
+            for subline in entry["author"].split('\n'):
+                for wline in wrap_text(f"By: {subline}", smallest_font, max_text_width):
+                    screen.blit(smallest_font.render(wline, True, WHITE), (60, y_line))
+                    y_line += 20
+
+            # url (jeśli nie jest pusty)
+            if entry["url"]:
+                for line in wrap_text(entry["url"], smallest_font, max_text_width):
+                    screen.blit(smallest_font.render(line, True, BLUE), (60, y_line))
+                    y_line += 20
+
+            # license (obsługa \n, jeśli nie jest pusta)
+            if entry["license"]:
+                for subline in entry["license"].split('\n'):
+                    for wline in wrap_text(f"License: {subline}", smallest_font, max_text_width):
+                        screen.blit(smallest_font.render(wline, True, ORANGE), (60, y_line))
+                        y_line += 20
+
             eq_width = smallest_font.size("=")[0]
-            num_eq = (SCREEN_WIDTH - 120) // eq_width  # 60px padding (po 60 z każdej strony)
+            num_eq = (SCREEN_WIDTH - 120) // eq_width
             eq_line = "=" * num_eq
             eq_surface = smallest_font.render(eq_line, True, HIGHLIGHT)
-            screen.blit(eq_surface, (60, y + 80))
+            screen.blit(eq_surface, (60, y_line))
 
         back_msg = small_font.render("Press Start or Escape to go back", True, GREEN)
         screen.blit(back_msg, (SCREEN_WIDTH // 2 - back_msg.get_width() // 2, SCREEN_HEIGHT - 40))
