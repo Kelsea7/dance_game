@@ -19,11 +19,11 @@
   },
   "auto_clean_scores": false,
   "players": [
-    "KASIA",
-    "Karo",
-    "WAFEL",
-    "PLAYER4",
-    "PLAYER5"
+    "Player_1",
+    "Player_2",
+    "Player_3",
+    "Player_4",
+    "Player_5"
   ],
   "selected_player": 0
 }

@@ -1,4 +1,4 @@
-# menu.py — wybór gracza, poprawiony SETTINGS, nie używa DIFFICULTY_SETTINGS
+# menu.py — dynamiczne okno gry, jeden screen dla całej gry i obsługa resize
 import pygame
 import sys
 import os
@@ -8,9 +8,14 @@ from dance_game import run_game, is_pressed, is_start, is_select
 
 pygame.init()
 
-SCREEN_WIDTH = 600
-SCREEN_HEIGHT = 900
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+info = pygame.display.Info()
+SCREEN_HEIGHT = int(info.current_h * 0.92)   # np. 92% wysokości
+SCREEN_WIDTH = int(SCREEN_HEIGHT * 2 / 3)
+if SCREEN_WIDTH > info.current_w:
+    SCREEN_WIDTH = info.current_w
+    SCREEN_HEIGHT = int(SCREEN_WIDTH * 3 / 2)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
+
 font = pygame.font.SysFont("dejavusans", 30)
 small_font = pygame.font.SysFont("dejavusans", 24)
 smallest_font = pygame.font.SysFont("dejavusans", 20)
@@ -72,16 +77,21 @@ def wrap_text(text, font, max_width):
 arrow_modes = ["random", "predefined"]
 selected_arrow_mode = 0
 
+def handle_resize(event):
+    global SCREEN_WIDTH, SCREEN_HEIGHT, screen
+    SCREEN_WIDTH, SCREEN_HEIGHT = event.w, event.h
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
+
 def show_choose_song():
-    global selected_song, selected_difficulty, selected_arrow_mode, selected_player, players
-    step = 0  # 0: PLAYER, 1: SONG, 2: DIFFICULTY, 3: ARROW MODE, 4: START, 5: BACK
+    global selected_song, selected_difficulty, selected_arrow_mode, selected_player, players, SCREEN_WIDTH, SCREEN_HEIGHT, screen
+    step = 1  # 0: PLAYER, 1: SONG, 2: DIFFICULTY, 3: ARROW MODE, 4: START, 5: BACK
     running = True
     while running:
         clock.tick(30)
         screen.fill(DARK_GRAY)
         song_title = os.path.splitext(songs[selected_song])[0]
-        predefined_exists = os.path.exists(os.path.join("songs", f"{song_title}_map.json"))
-
+        diff_name = difficulties[selected_difficulty].lower()
+        predefined_exists = os.path.exists(os.path.join("songs", f"{song_title}_{diff_name}_map.json"))
         # --- WYBÓR GRACZA ---
         player_y = 100
         if step == 0:
@@ -167,14 +177,16 @@ def show_choose_song():
             secs = int(duration) % 60
             time_text = f"{mins}:{secs:02d}"
             dur_surface = smallest_font.render(f"Time: {time_text}", True, CYAN)
-            screen.blit(dur_surface, (SCREEN_WIDTH - 120, 150))  # po prawej, obok SONG
+            screen.blit(dur_surface, (SCREEN_WIDTH - 120, 150))
         except:
             pass
 
         pygame.display.flip()
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or is_select(event):
+            if event.type == pygame.VIDEORESIZE:
+                handle_resize(event)
+            elif event.type == pygame.QUIT or is_select(event):
                 return
             elif is_pressed(event, "up"):
                 step = (step - 1) % 6
@@ -202,22 +214,30 @@ def show_choose_song():
                     selected_arrow_mode = (selected_arrow_mode + 1) % len(arrow_modes)
                     if arrow_modes[selected_arrow_mode] == "predefined" and not predefined_exists:
                         selected_arrow_mode = 0
+
             elif is_start(event):
                 if step == 4:
                     try:
                         song_path = os.path.join("songs", songs[selected_song])
-                        difficulty = difficulties[selected_difficulty].upper()  
+                        difficulty = difficulties[selected_difficulty].upper()
                         player_name = players[selected_player]
                         arrow_mode = arrow_modes[selected_arrow_mode]
                         song_title = os.path.splitext(os.path.basename(song_path))[0]
-                        map_file = f"songs/{song_title}_map.json" if arrow_mode == "predefined" else None
+                        diff_name = difficulties[selected_difficulty].lower()
+                        
+                        if arrow_mode == "predefined":
+                            map_file = f"songs/{song_title}_{diff_name}_map.json"
+                        else:
+                            map_file = None
 
                         # zapisz wybranego gracza do settings
                         settings["selected_player"] = selected_player
                         with open(SETTINGS_FILE, "w") as f:
                             json.dump(settings, f, indent=2)
 
-                        run_game(song_path=song_path, difficulty=difficulty, player_name=player_name, arrow_mode=arrow_mode, map_file=map_file)
+                        # PRZEKAZUJEMY screen, SCREEN_WIDTH, SCREEN_HEIGHT!
+                        run_game(song_path=song_path, difficulty=difficulty, player_name=player_name, arrow_mode=arrow_mode, map_file=map_file,
+                            screen=screen, SCREEN_WIDTH=SCREEN_WIDTH, SCREEN_HEIGHT=SCREEN_HEIGHT)
                     except Exception as e:
                         import traceback
                         print("Błąd podczas uruchamiania gry:")
@@ -244,15 +264,17 @@ def draw_menu():
     pygame.display.flip()
 
 def menu_loop():
-    global selected_index
+    global selected_index, SCREEN_WIDTH, SCREEN_HEIGHT, screen
     while True:
         clock.tick(30)
         draw_menu()
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or is_select(event):
+            if event.type == pygame.VIDEORESIZE:
+                handle_resize(event)
+            elif event.type == pygame.QUIT or is_select(event):
                 pygame.quit()
                 sys.exit()
-            if is_pressed(event, "up"):
+            elif is_pressed(event, "up"):
                 selected_index = (selected_index - 1) % len(menu_options)
             elif is_pressed(event, "down"):
                 selected_index = (selected_index + 1) % len(menu_options)
@@ -271,7 +293,7 @@ def menu_loop():
                     sys.exit()
 
 def show_settings():
-    global players, settings
+    global players, settings, SCREEN_WIDTH, SCREEN_HEIGHT, screen
     settings_path = SETTINGS_FILE
     if os.path.exists(settings_path):
         with open(settings_path, "r") as f:
@@ -351,7 +373,9 @@ def show_settings():
         pygame.display.flip()
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or is_select(event):
+            if event.type == pygame.VIDEORESIZE:
+                handle_resize(event)
+            elif event.type == pygame.QUIT or is_select(event):
                 return
 
             if editing_name:
@@ -398,16 +422,14 @@ def show_settings():
                     elif selected_index == len(players) + 1:
                         return
 
-
-##### SCORES #####
 def show_scores():
+    global SCREEN_WIDTH, SCREEN_HEIGHT, screen
     difficulties = ["BACK", "easy", "medium", "hard", "nightmare"]
     selected_difficulty = 1  # ZACZNIJ od "easy" zamiast BACK
     selected_score_index = 0
     viewing_detail = False
     VISIBLE_ENTRIES = 18
     scroll_offset = 0
-
 
     if os.path.exists("scores.json"):
         with open("scores.json", "r") as f:
@@ -534,7 +556,9 @@ def show_scores():
         pygame.display.flip()
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or is_select(event):
+            if event.type == pygame.VIDEORESIZE:
+                handle_resize(event)
+            elif event.type == pygame.QUIT or is_select(event):
                 return
 
             elif is_pressed(event, "left"):
@@ -579,6 +603,7 @@ def show_scores():
 
 
 def show_credits():
+    global SCREEN_WIDTH, SCREEN_HEIGHT, screen
     if os.path.exists("credits.json"):
         with open("credits.json", "r") as f:
             credits = json.load(f)
@@ -647,7 +672,9 @@ def show_credits():
         pygame.display.flip()
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT or is_select(event) or is_start(event):
+            if event.type == pygame.VIDEORESIZE:
+                handle_resize(event)
+            elif event.type == pygame.QUIT or is_select(event) or is_start(event):
                 return
             elif is_pressed(event, "up"):
                 if offset > 0:

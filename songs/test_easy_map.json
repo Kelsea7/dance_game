@@ -1,0 +1,55 @@
+{
+  "song": "test.mp3",
+  "difficulty": "EASY",
+  "auto_difficulty": "EASY",
+  "arrows": [
+    {
+      "time": 2688,
+      "type": "left"
+    },
+    {
+      "time": 3745,
+      "type": "up"
+    },
+    {
+      "time": 4796,
+      "type": "down"
+    },
+    {
+      "time": 4812,
+      "type": "left"
+    },
+    {
+      "time": 5843,
+      "type": "right"
+    },
+    {
+      "time": 6905,
+      "type": "up"
+    },
+    {
+      "time": 6905,
+      "type": "right"
+    },
+    {
+      "time": 7971,
+      "type": "down"
+    },
+    {
+      "time": 8984,
+      "type": "left"
+    },
+    {
+      "time": 8984,
+      "type": "right"
+    },
+    {
+      "time": 10027,
+      "type": "down"
+    },
+    {
+      "time": 11110,
+      "type": "up"
+    }
+  ]
+}

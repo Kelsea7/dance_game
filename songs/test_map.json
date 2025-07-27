@@ -1,7 +1,0 @@
-[
-  {"time": 500, "type": "left"},
-  {"time": 750, "type": "right"},
-  {"time": 1500, "type": "up"},
-  {"time": 2000, "type": "left"},
-  {"time": 2200, "type": "down"}
-]
